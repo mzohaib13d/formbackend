@@ -1,0 +1,7 @@
+[environments]
+  [environments.production]
+    CLOUDINARY_CLOUD_NAME = "dvvoeqr90"
+    CLOUDINARY_API_KEY = "842973282498232"
+    CLOUDINARY_API_SECRET = "7K-7Y9hnY4tOtUX2BVhZgPlPtuc"
+    MONGODB_URI = "mongodb+srv://mzohaib13d0:BurlTree50401@zohaibdb.vh9eaie.mongodb.net/registration-app?retryWrites=true&w=majority"
+    NODE_ENV = "production"
