@@ -9,12 +9,29 @@ dotenv.config();
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// ✅ CRITICAL FIX: Add environment variable check BEFORE connecting to DB
+console.log('=== ENVIRONMENT VARIABLE CHECK ===');
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ Set' : '❌ NOT SET');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('PORT:', process.env.PORT || 5000);
+console.log('================================');
+
+// ✅ FIXED: Only connect to MongoDB if MONGODB_URI exists
+if (process.env.MONGODB_URI) {
+  connectDB();
+} else {
+  console.log('⚠️  MongoDB not connected - MONGODB_URI is missing');
+  console.log('💡 Add MONGODB_URI environment variable in Railway');
+}
 
 // ✅ FIXED CORS configuration for local development
 app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+  origin: [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173", 
+    "http://localhost:3000",
+    "https://formreactzohaib.netlify.app"  // ← Your Netlify frontend
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
@@ -38,7 +55,8 @@ app.get("/", (req, res) => {
   res.json({ 
     message: "Server is running successfully!",
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: process.env.MONGODB_URI ? "Connected" : "Not connected"
   });
 });
 
@@ -48,7 +66,8 @@ app.get("/health", (req, res) => {
     status: "OK", 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    nodeVersion: process.version
+    nodeVersion: process.version,
+    database: process.env.MONGODB_URI ? "Configured" : "Not configured"
   });
 });
 
@@ -57,7 +76,8 @@ app.get("/api/test", (req, res) => {
   res.json({ 
     message: "API is working!",
     success: true,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    database: process.env.MONGODB_URI ? "Ready" : "Not ready"
   });
 });
 
@@ -88,4 +108,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌐 Network URL: http://0.0.0.0:${PORT}`);
   console.log(`✅ CORS enabled for: http://localhost:5173`);
   console.log(`❤️  Health check: http://localhost:${PORT}/health`);
+  console.log(`🗄️  Database: ${process.env.MONGODB_URI ? 'Connected' : 'NOT CONNECTED - Check Environment Variables'}`);
 });
